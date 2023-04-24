@@ -596,9 +596,8 @@ typedef struct region_t {
 } region_t;
 
 typedef struct meta_t {
-  // Linear malloc supports a maximum of 4GB memory size, which is 1024
-  // pages at most.
-  uint8_t pages[1024];
+  // Linear malloc supports a maximum of 4096 pages now, which is 16MB.
+  uint8_t pages[4096];
 } meta_t;
 
 #ifndef FM_MANUAL_INIT
@@ -608,8 +607,8 @@ typedef struct meta_t {
 #if (FM_MEMORY_SIZE & (FM_PAGE_SIZE - 1)) != 0
 #error "Linear malloc memory size must be aligned on 4KB!"
 #endif
-#if (FM_MEMORY_SIZE < 128 * 1024) || (FM_MEMORY_SIZE > 0xFFFFFFFF)
-#error "Linear malloc memory size must be between 128KB and 4GB!"
+#if (FM_MEMORY_SIZE < 128 * 1024) || (FM_MEMORY_SIZE >= 16 * 1024 * 1024)
+#error "Linear malloc memory size must be between 128KB and 16MB!"
 #endif
 
 static uint8_t __sbuffer[FM_MEMORY_SIZE]
@@ -683,8 +682,8 @@ int fm_lm_reinit(void *buffer, size_t size, int zero_filled) {
     FM_DEBUG("Memory size must be aligned to 4K!");
     FM_ABORT();
   }
-  if ((size < 128 * 1024) || (size > 0xFFFFFFFF)) {
-    FM_DEBUG("Memory size must be between 128KB and 4GB!");
+  if ((size < 128 * 1024) || (size >= 16 * 1024 * 1024)) {
+    FM_DEBUG("Memory size must be between 128KB and 16MB!");
     FM_ABORT();
   }
 
