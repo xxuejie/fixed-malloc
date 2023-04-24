@@ -1,0 +1,537 @@
+
+target/release/build/tests-3f220766223d93ae/slab-malloc.o:     file format elf64-x86-64
+
+
+Disassembly of section .text.unlikely.fm_sm_free:
+
+0000000000000000 <fm_sm_free.cold>:
+  size_t p = (size_t)ptr;
+  size_t base = ((size_t)meta) + PAGE_META_RESERVED_SIZE;
+#ifdef FM_GUARDS
+  if ((p - base) % meta->size != 0) {
+    FM_DEBUG("Pointer does not lie on the boundary of slab allocated value!");
+    FM_ABORT();
+   0:	e8 00 00 00 00       	call   5 <fm_sm_free.cold+0x5>
+
+Disassembly of section .text.fm_sm_free:
+
+0000000000000000 <fm_sm_free>:
+
+static void bitmap_clear(page_meta_t *meta, size_t index) {
+  meta->bitmap[index / 64] &= (~(((uint64_t)1) << (index % 64)));
+}
+
+void fm_sm_free(void *ptr) {
+   0:	f3 0f 1e fa          	endbr64 
+  if ((((size_t)ptr) & (FM_PAGE_SIZE - 1)) == 0) {
+   4:	f7 c7 ff 0f 00 00    	test   $0xfff,%edi
+   a:	0f 84 c8 00 00 00    	je     d8 <fm_sm_free+0xd8>
+void fm_sm_free(void *ptr) {
+  10:	41 55                	push   %r13
+  if ((p - base) % meta->size != 0) {
+  12:	48 8d 47 c0          	lea    -0x40(%rdi),%rax
+  16:	31 d2                	xor    %edx,%edx
+void fm_sm_free(void *ptr) {
+  18:	41 54                	push   %r12
+  1a:	55                   	push   %rbp
+static inline size_t __fm_roundup(size_t x, size_t round) {
+  return x + (((~x) + 1) & (round - 1));
+}
+
+static inline size_t __fm_rounddown(size_t x, size_t round) {
+  return x & (~(round - 1));
+  1b:	48 89 fd             	mov    %rdi,%rbp
+  1e:	53                   	push   %rbx
+  1f:	48 81 e5 00 f0 ff ff 	and    $0xfffffffffffff000,%rbp
+  if ((p - base) % meta->size != 0) {
+  26:	48 29 e8             	sub    %rbp,%rax
+void fm_sm_free(void *ptr) {
+  29:	48 83 ec 08          	sub    $0x8,%rsp
+  2d:	48 f7 75 20          	divq   0x20(%rbp)
+  31:	48 89 c3             	mov    %rax,%rbx
+  if ((p - base) % meta->size != 0) {
+  34:	48 85 d2             	test   %rdx,%rdx
+  37:	0f 85 00 00 00 00    	jne    3d <fm_sm_free+0x3d>
+  if ((p - base) / meta->size >= meta->count) {
+  3d:	4c 8b 6d 28          	mov    0x28(%rbp),%r13
+  41:	4c 39 e8             	cmp    %r13,%rax
+  44:	0f 83 00 00 00 00    	jae    4a <fm_sm_free+0x4a>
+  return (size_t)(__builtin_popcountl(meta->bitmap[0]) +
+  4a:	48 8b 7d 10          	mov    0x10(%rbp),%rdi
+  4e:	e8 00 00 00 00       	call   53 <fm_sm_free+0x53>
+                  __builtin_popcountl(meta->bitmap[1])) == meta->count;
+  53:	48 8b 7d 18          	mov    0x18(%rbp),%rdi
+  return (size_t)(__builtin_popcountl(meta->bitmap[0]) +
+  57:	41 89 c4             	mov    %eax,%r12d
+                  __builtin_popcountl(meta->bitmap[1])) == meta->count;
+  5a:	e8 00 00 00 00       	call   5f <fm_sm_free+0x5f>
+  meta->bitmap[index / 64] &= (~(((uint64_t)1) << (index % 64)));
+  5f:	48 89 da             	mov    %rbx,%rdx
+  62:	89 d9                	mov    %ebx,%ecx
+                  __builtin_popcountl(meta->bitmap[1])) == meta->count;
+  64:	41 89 c0             	mov    %eax,%r8d
+  meta->bitmap[index / 64] &= (~(((uint64_t)1) << (index % 64)));
+  67:	b8 01 00 00 00       	mov    $0x1,%eax
+  6c:	48 c1 ea 06          	shr    $0x6,%rdx
+  return (size_t)(__builtin_popcountl(meta->bitmap[0]) +
+  70:	45 01 c4             	add    %r8d,%r12d
+  meta->bitmap[index / 64] &= (~(((uint64_t)1) << (index % 64)));
+  73:	48 d3 e0             	shl    %cl,%rax
+  return (size_t)(__builtin_popcountl(meta->bitmap[0]) +
+  76:	4d 63 e4             	movslq %r12d,%r12
+  meta->bitmap[index / 64] &= (~(((uint64_t)1) << (index % 64)));
+  79:	48 f7 d0             	not    %rax
+  7c:	48 21 44 d5 10       	and    %rax,0x10(%rbp,%rdx,8)
+  }
+  page_meta_t *meta = (page_meta_t *)__fm_rounddown((size_t)ptr, FM_PAGE_SIZE);
+  size_t element_index = ptr_to_index(meta, ptr);
+  int all_used = bitmap_all_used(meta);
+  bitmap_clear(meta, element_index);
+  if (all_used) {
+  81:	4d 39 ec             	cmp    %r13,%r12
+  84:	74 12                	je     98 <fm_sm_free+0x98>
+    c_list_link_tail(&slab_lists[meta->slab_index], &meta->link);
+    FM_DEBUG("Retrieving previously fully used slab: %p %ld\n", meta,
+             meta->size);
+  }
+}
+  86:	48 83 c4 08          	add    $0x8,%rsp
+  8a:	5b                   	pop    %rbx
+  8b:	5d                   	pop    %rbp
+  8c:	41 5c                	pop    %r12
+  8e:	41 5d                	pop    %r13
+  90:	c3                   	ret    
+  91:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+ *
+ * @what is not inspected prior to being linked. Hence, it better not be linked
+ * into another list, or the other list will be corrupted.
+ */
+static inline void c_list_link_before(CList *where, CList *what) {
+        CList *prev = where->prev, *next = where;
+  98:	48 8b 55 30          	mov    0x30(%rbp),%rdx
+  9c:	48 8d 05 00 00 00 00 	lea    0x0(%rip),%rax        # a3 <fm_sm_free+0xa3>
+  a3:	48 c1 e2 04          	shl    $0x4,%rdx
+  a7:	48 01 d0             	add    %rdx,%rax
+  aa:	48 8b 50 08          	mov    0x8(%rax),%rdx
+
+        next->prev = what;
+        what->next = next;
+  ae:	66 48 0f 6e c0       	movq   %rax,%xmm0
+        next->prev = what;
+  b3:	48 89 68 08          	mov    %rbp,0x8(%rax)
+        what->next = next;
+  b7:	66 48 0f 6e ca       	movq   %rdx,%xmm1
+  bc:	66 0f 6c c1          	punpcklqdq %xmm1,%xmm0
+  c0:	0f 29 45 00          	movaps %xmm0,0x0(%rbp)
+        what->prev = prev;
+        prev->next = what;
+  c4:	48 89 2a             	mov    %rbp,(%rdx)
+  c7:	48 83 c4 08          	add    $0x8,%rsp
+  cb:	5b                   	pop    %rbx
+  cc:	5d                   	pop    %rbp
+  cd:	41 5c                	pop    %r12
+  cf:	41 5d                	pop    %r13
+  d1:	c3                   	ret    
+  d2:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+    fm_lm_free(ptr);
+  d8:	e9 00 00 00 00       	jmp    dd <fm_sm_free+0xdd>
+
+Disassembly of section .text.unlikely.fm_sm_malloc:
+
+0000000000000000 <fm_sm_malloc.cold>:
+    FM_ABORT();
+   0:	e8 00 00 00 00       	call   5 <fm_sm_malloc.cold+0x5>
+
+Disassembly of section .text.fm_sm_malloc:
+
+0000000000000000 <fm_sm_malloc>:
+    p = fm_lm_malloc(size, t);
+  }
+  return p;
+}
+
+void *fm_sm_malloc(size_t size) {
+   0:	f3 0f 1e fa          	endbr64 
+   4:	41 57                	push   %r15
+   6:	41 56                	push   %r14
+   8:	41 55                	push   %r13
+   a:	41 54                	push   %r12
+   c:	55                   	push   %rbp
+   d:	53                   	push   %rbx
+   e:	48 83 ec 18          	sub    $0x18,%rsp
+    if (size <= slab_sizes[i]) {
+  12:	48 83 ff 20          	cmp    $0x20,%rdi
+  16:	0f 86 d1 00 00 00    	jbe    ed <fm_sm_malloc+0xed>
+  1c:	48 89 fd             	mov    %rdi,%rbp
+  1f:	48 83 ff 40          	cmp    $0x40,%rdi
+  23:	0f 86 d1 02 00 00    	jbe    2fa <fm_sm_malloc+0x2fa>
+  29:	48 81 ff 80 00 00 00 	cmp    $0x80,%rdi
+  30:	0f 86 da 02 00 00    	jbe    310 <fm_sm_malloc+0x310>
+  36:	48 81 ff 00 02 00 00 	cmp    $0x200,%rdi
+  3d:	0f 86 e3 02 00 00    	jbe    326 <fm_sm_malloc+0x326>
+  43:	48 81 ff 00 04 00 00 	cmp    $0x400,%rdi
+  4a:	0f 86 ec 02 00 00    	jbe    33c <fm_sm_malloc+0x33c>
+  void *p = fm_lm_malloc(size, t);
+  50:	be 01 00 00 00       	mov    $0x1,%esi
+  55:	e8 00 00 00 00       	call   5a <fm_sm_malloc+0x5a>
+  5a:	49 89 c0             	mov    %rax,%r8
+  if (p == NULL) {
+  5d:	48 85 c0             	test   %rax,%rax
+  60:	74 16                	je     78 <fm_sm_malloc+0x78>
+  FM_DEBUG("Creating new slab: %p %ld\n", meta, meta->size);
+
+  size_t element_index = 0;
+  bitmap_set(meta, element_index);
+  return index_to_ptr(meta, element_index);
+}
+  62:	48 83 c4 18          	add    $0x18,%rsp
+  66:	4c 89 c0             	mov    %r8,%rax
+  69:	5b                   	pop    %rbx
+  6a:	5d                   	pop    %rbp
+  6b:	41 5c                	pop    %r12
+  6d:	41 5d                	pop    %r13
+  6f:	41 5e                	pop    %r14
+  71:	41 5f                	pop    %r15
+  73:	c3                   	ret    
+  74:	0f 1f 40 00          	nopl   0x0(%rax)
+  78:	48 8d 0d 00 00 00 00 	lea    0x0(%rip),%rcx        # 7f <fm_sm_malloc+0x7f>
+  7f:	48 8d 79 50          	lea    0x50(%rcx),%rdi
+      CList *iter = slab_lists[i].next;
+  83:	48 8b 01             	mov    (%rcx),%rax
+      while (iter != &slab_lists[i]) {
+  86:	66 48 0f 6e c0       	movq   %rax,%xmm0
+  8b:	66 0f 6c c0          	punpcklqdq %xmm0,%xmm0
+  8f:	90                   	nop
+  90:	48 39 c1             	cmp    %rax,%rcx
+  93:	74 34                	je     c9 <fm_sm_malloc+0xc9>
+  95:	48 8b 50 10          	mov    0x10(%rax),%rdx
+  return (meta->bitmap[0] == 0) && (meta->bitmap[1] == 0);
+  99:	48 85 d2             	test   %rdx,%rdx
+  9c:	75 fb                	jne    99 <fm_sm_malloc+0x99>
+  9e:	48 83 78 18 00       	cmpq   $0x0,0x18(%rax)
+  a3:	75 eb                	jne    90 <fm_sm_malloc+0x90>
+          iter = iter->next;
+  a5:	48 8b 10             	mov    (%rax),%rdx
+        return what && what->next != what;
+  a8:	48 39 c2             	cmp    %rax,%rdx
+  ab:	74 0e                	je     bb <fm_sm_malloc+0xbb>
+ * Note that this does not modify @what. It just modifies the previous and next
+ * elements in the list to no longer reference @what. If you want to make sure
+ * @what is re-initialized after removal, use c_list_unlink().
+ */
+static inline void c_list_unlink_stale(CList *what) {
+        CList *prev = what->prev, *next = what->next;
+  ad:	48 8b 70 08          	mov    0x8(%rax),%rsi
+
+        next->prev = prev;
+  b1:	48 89 72 08          	mov    %rsi,0x8(%rdx)
+        prev->next = next;
+  b5:	48 89 16             	mov    %rdx,(%rsi)
+ */
+static inline void c_list_unlink(CList *what) {
+        /* condition is not needed, but avoids STOREs in fast-path */
+        if (c_list_is_linked(what)) {
+                c_list_unlink_stale(what);
+                *what = (CList)C_LIST_INIT(*what);
+  b8:	0f 11 00             	movups %xmm0,(%rax)
+  bb:	48 89 d0             	mov    %rdx,%rax
+  be:	66 48 0f 6e c0       	movq   %rax,%xmm0
+  c3:	66 0f 6c c0          	punpcklqdq %xmm0,%xmm0
+  c7:	eb c7                	jmp    90 <fm_sm_malloc+0x90>
+    for (size_t i = 0; i < sizeof(slab_sizes) / sizeof(size_t); i++) {
+  c9:	48 83 c1 10          	add    $0x10,%rcx
+  cd:	48 39 cf             	cmp    %rcx,%rdi
+  d0:	75 b1                	jne    83 <fm_sm_malloc+0x83>
+}
+  d2:	48 83 c4 18          	add    $0x18,%rsp
+    p = fm_lm_malloc(size, t);
+  d6:	48 89 ef             	mov    %rbp,%rdi
+  d9:	be 01 00 00 00       	mov    $0x1,%esi
+}
+  de:	5b                   	pop    %rbx
+  df:	5d                   	pop    %rbp
+  e0:	41 5c                	pop    %r12
+  e2:	41 5d                	pop    %r13
+  e4:	41 5e                	pop    %r14
+  e6:	41 5f                	pop    %r15
+    p = fm_lm_malloc(size, t);
+  e8:	e9 00 00 00 00       	jmp    ed <fm_sm_malloc+0xed>
+    if (size <= slab_sizes[i]) {
+  ed:	4c 8d 2d 00 00 00 00 	lea    0x0(%rip),%r13        # f4 <fm_sm_malloc+0xf4>
+  for (size_t i = 0; i < sizeof(slab_sizes) / sizeof(size_t); i++) {
+  f4:	45 31 e4             	xor    %r12d,%r12d
+    if (size <= slab_sizes[i]) {
+  f7:	4c 89 ed             	mov    %r13,%rbp
+  for (CList *iter = slab_lists[i].next; iter != &slab_lists[i];
+  fa:	4c 89 e0             	mov    %r12,%rax
+  fd:	48 c1 e0 04          	shl    $0x4,%rax
+ 101:	4d 8b 74 05 00       	mov    0x0(%r13,%rax,1),%r14
+ 106:	49 39 ee             	cmp    %rbp,%r14
+ 109:	75 27                	jne    132 <fm_sm_malloc+0x132>
+ 10b:	e9 a8 00 00 00       	jmp    1b8 <fm_sm_malloc+0x1b8>
+    zeros = __builtin_ctzl(~(meta->bitmap[0]));
+ 110:	48 f7 d0             	not    %rax
+ 113:	31 db                	xor    %ebx,%ebx
+  if (zeros >= meta->count) {
+ 115:	4d 8b 7e 28          	mov    0x28(%r14),%r15
+    zeros = __builtin_ctzl(~(meta->bitmap[0]));
+ 119:	f3 48 0f bc d8       	tzcnt  %rax,%rbx
+ 11e:	48 63 db             	movslq %ebx,%rbx
+  if (zeros >= meta->count) {
+ 121:	4c 39 fb             	cmp    %r15,%rbx
+ 124:	72 37                	jb     15d <fm_sm_malloc+0x15d>
+       iter = iter->next) {
+ 126:	4d 8b 36             	mov    (%r14),%r14
+  for (CList *iter = slab_lists[i].next; iter != &slab_lists[i];
+ 129:	49 39 ee             	cmp    %rbp,%r14
+ 12c:	0f 84 86 00 00 00    	je     1b8 <fm_sm_malloc+0x1b8>
+  if (meta->bitmap[0] != (uint64_t)-1) {
+ 132:	49 8b 46 10          	mov    0x10(%r14),%rax
+ 136:	48 83 f8 ff          	cmp    $0xffffffffffffffff,%rax
+ 13a:	75 d4                	jne    110 <fm_sm_malloc+0x110>
+  } else if (meta->bitmap[1] != (uint64_t)-1) {
+ 13c:	49 8b 5e 18          	mov    0x18(%r14),%rbx
+ 140:	48 83 fb ff          	cmp    $0xffffffffffffffff,%rbx
+ 144:	74 e0                	je     126 <fm_sm_malloc+0x126>
+    zeros = 64 + __builtin_ctzl(~(meta->bitmap[1]));
+ 146:	48 f7 d3             	not    %rbx
+  if (zeros >= meta->count) {
+ 149:	4d 8b 7e 28          	mov    0x28(%r14),%r15
+    zeros = 64 + __builtin_ctzl(~(meta->bitmap[1]));
+ 14d:	f3 48 0f bc db       	tzcnt  %rbx,%rbx
+ 152:	83 c3 40             	add    $0x40,%ebx
+ 155:	48 63 db             	movslq %ebx,%rbx
+  if (zeros >= meta->count) {
+ 158:	4c 39 fb             	cmp    %r15,%rbx
+ 15b:	73 c9                	jae    126 <fm_sm_malloc+0x126>
+  meta->bitmap[index / 64] |= ((uint64_t)1) << (index % 64);
+ 15d:	48 89 da             	mov    %rbx,%rdx
+ 160:	89 d9                	mov    %ebx,%ecx
+ 162:	66 49 0f 6e ce       	movq   %r14,%xmm1
+ 167:	b8 01 00 00 00       	mov    $0x1,%eax
+ 16c:	48 c1 ea 06          	shr    $0x6,%rdx
+ 170:	48 d3 e0             	shl    %cl,%rax
+ 173:	66 0f 6c c9          	punpcklqdq %xmm1,%xmm1
+ 177:	49 09 44 d6 10       	or     %rax,0x10(%r14,%rdx,8)
+  return (size_t)(__builtin_popcountl(meta->bitmap[0]) +
+ 17c:	49 8b 7e 10          	mov    0x10(%r14),%rdi
+ 180:	0f 29 0c 24          	movaps %xmm1,(%rsp)
+ 184:	e8 00 00 00 00       	call   189 <fm_sm_malloc+0x189>
+                  __builtin_popcountl(meta->bitmap[1])) == meta->count;
+ 189:	49 8b 7e 18          	mov    0x18(%r14),%rdi
+  return (size_t)(__builtin_popcountl(meta->bitmap[0]) +
+ 18d:	89 c5                	mov    %eax,%ebp
+                  __builtin_popcountl(meta->bitmap[1])) == meta->count;
+ 18f:	e8 00 00 00 00       	call   194 <fm_sm_malloc+0x194>
+  return (size_t)(__builtin_popcountl(meta->bitmap[0]) +
+ 194:	01 c5                	add    %eax,%ebp
+ 196:	48 63 ed             	movslq %ebp,%rbp
+        return what && what->next != what;
+ 199:	4c 39 fd             	cmp    %r15,%rbp
+ 19c:	0f 84 33 01 00 00    	je     2d5 <fm_sm_malloc+0x2d5>
+                  index * meta->size);
+ 1a2:	49 0f af 5e 20       	imul   0x20(%r14),%rbx
+  return (void *)(((size_t)meta) + PAGE_META_RESERVED_SIZE +
+ 1a7:	4d 8d 44 1e 40       	lea    0x40(%r14,%rbx,1),%r8
+      return index_to_ptr(meta, index);
+ 1ac:	e9 b1 fe ff ff       	jmp    62 <fm_sm_malloc+0x62>
+ 1b1:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+  void *p = fm_lm_malloc(size, t);
+ 1b8:	be 02 00 00 00       	mov    $0x2,%esi
+ 1bd:	bf 00 10 00 00       	mov    $0x1000,%edi
+ 1c2:	e8 00 00 00 00       	call   1c7 <fm_sm_malloc+0x1c7>
+ 1c7:	49 89 c0             	mov    %rax,%r8
+  if (p == NULL) {
+ 1ca:	48 85 c0             	test   %rax,%rax
+ 1cd:	0f 84 7d 00 00 00    	je     250 <fm_sm_malloc+0x250>
+  meta->size = slab_sizes[i];
+ 1d3:	48 8d 05 00 00 00 00 	lea    0x0(%rip),%rax        # 1da <fm_sm_malloc+0x1da>
+  meta->count = (FM_PAGE_SIZE - PAGE_META_RESERVED_SIZE) / meta->size;
+ 1da:	31 d2                	xor    %edx,%edx
+  meta->slab_index = i;
+ 1dc:	4d 89 60 30          	mov    %r12,0x30(%r8)
+        what->next = next;
+ 1e0:	66 48 0f 6e dd       	movq   %rbp,%xmm3
+  meta->size = slab_sizes[i];
+ 1e5:	4a 8b 0c e0          	mov    (%rax,%r12,8),%rcx
+  meta->count = (FM_PAGE_SIZE - PAGE_META_RESERVED_SIZE) / meta->size;
+ 1e9:	b8 c0 0f 00 00       	mov    $0xfc0,%eax
+        CList *prev = where, *next = where->next;
+ 1ee:	49 c1 e4 04          	shl    $0x4,%r12
+  meta->bitmap[1] = 0;
+ 1f2:	49 c7 40 18 00 00 00 	movq   $0x0,0x18(%r8)
+ 1f9:	00 
+ 1fa:	4d 01 e5             	add    %r12,%r13
+  meta->count = (FM_PAGE_SIZE - PAGE_META_RESERVED_SIZE) / meta->size;
+ 1fd:	48 f7 f1             	div    %rcx
+  meta->size = slab_sizes[i];
+ 200:	66 48 0f 6e c1       	movq   %rcx,%xmm0
+ 205:	66 48 0f 6e d0       	movq   %rax,%xmm2
+ 20a:	49 8b 45 00          	mov    0x0(%r13),%rax
+ 20e:	66 0f 6c c2          	punpcklqdq %xmm2,%xmm0
+ 212:	41 0f 11 40 20       	movups %xmm0,0x20(%r8)
+        what->next = next;
+ 217:	66 48 0f 6e c0       	movq   %rax,%xmm0
+ 21c:	66 0f 6c c3          	punpcklqdq %xmm3,%xmm0
+        next->prev = what;
+ 220:	4c 89 40 08          	mov    %r8,0x8(%rax)
+        what->next = next;
+ 224:	41 0f 11 00          	movups %xmm0,(%r8)
+        prev->next = what;
+ 228:	4d 89 45 00          	mov    %r8,0x0(%r13)
+  meta->bitmap[index / 64] |= ((uint64_t)1) << (index % 64);
+ 22c:	49 c7 40 10 01 00 00 	movq   $0x1,0x10(%r8)
+ 233:	00 
+  if (index >= meta->count) {
+ 234:	48 81 f9 c0 0f 00 00 	cmp    $0xfc0,%rcx
+ 23b:	0f 87 00 00 00 00    	ja     241 <fm_sm_malloc+0x241>
+  return (void *)(((size_t)meta) + PAGE_META_RESERVED_SIZE +
+ 241:	49 83 c0 40          	add    $0x40,%r8
+  return index_to_ptr(meta, element_index);
+ 245:	e9 18 fe ff ff       	jmp    62 <fm_sm_malloc+0x62>
+ 24a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+ 250:	48 8d 0d 00 00 00 00 	lea    0x0(%rip),%rcx        # 257 <fm_sm_malloc+0x257>
+ 257:	48 8d 79 50          	lea    0x50(%rcx),%rdi
+      CList *iter = slab_lists[i].next;
+ 25b:	48 8b 01             	mov    (%rcx),%rax
+      while (iter != &slab_lists[i]) {
+ 25e:	66 48 0f 6e c0       	movq   %rax,%xmm0
+ 263:	66 0f 6c c0          	punpcklqdq %xmm0,%xmm0
+ 267:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+ 26e:	00 00 
+ 270:	48 39 c1             	cmp    %rax,%rcx
+ 273:	74 37                	je     2ac <fm_sm_malloc+0x2ac>
+ 275:	48 8b 50 10          	mov    0x10(%rax),%rdx
+  return (meta->bitmap[0] == 0) && (meta->bitmap[1] == 0);
+ 279:	48 85 d2             	test   %rdx,%rdx
+ 27c:	75 fb                	jne    279 <fm_sm_malloc+0x279>
+ 27e:	48 83 78 18 00       	cmpq   $0x0,0x18(%rax)
+ 283:	75 eb                	jne    270 <fm_sm_malloc+0x270>
+          iter = iter->next;
+ 285:	48 8b 10             	mov    (%rax),%rdx
+        return what && what->next != what;
+ 288:	48 39 c2             	cmp    %rax,%rdx
+ 28b:	74 0e                	je     29b <fm_sm_malloc+0x29b>
+        CList *prev = what->prev, *next = what->next;
+ 28d:	48 8b 70 08          	mov    0x8(%rax),%rsi
+        next->prev = prev;
+ 291:	48 89 72 08          	mov    %rsi,0x8(%rdx)
+        prev->next = next;
+ 295:	48 89 16             	mov    %rdx,(%rsi)
+                *what = (CList)C_LIST_INIT(*what);
+ 298:	0f 11 00             	movups %xmm0,(%rax)
+ 29b:	48 89 d0             	mov    %rdx,%rax
+ 29e:	66 48 0f 6e c0       	movq   %rax,%xmm0
+ 2a3:	66 0f 6c c0          	punpcklqdq %xmm0,%xmm0
+ 2a7:	48 39 c1             	cmp    %rax,%rcx
+ 2aa:	75 c9                	jne    275 <fm_sm_malloc+0x275>
+    for (size_t i = 0; i < sizeof(slab_sizes) / sizeof(size_t); i++) {
+ 2ac:	48 83 c1 10          	add    $0x10,%rcx
+ 2b0:	48 39 f9             	cmp    %rdi,%rcx
+ 2b3:	75 a6                	jne    25b <fm_sm_malloc+0x25b>
+    p = fm_lm_malloc(size, t);
+ 2b5:	be 02 00 00 00       	mov    $0x2,%esi
+ 2ba:	bf 00 10 00 00       	mov    $0x1000,%edi
+ 2bf:	e8 00 00 00 00       	call   2c4 <fm_sm_malloc+0x2c4>
+ 2c4:	49 89 c0             	mov    %rax,%r8
+  if (slab == NULL) {
+ 2c7:	48 85 c0             	test   %rax,%rax
+ 2ca:	0f 85 03 ff ff ff    	jne    1d3 <fm_sm_malloc+0x1d3>
+ 2d0:	e9 8d fd ff ff       	jmp    62 <fm_sm_malloc+0x62>
+        return what && what->next != what;
+ 2d5:	49 8b 06             	mov    (%r14),%rax
+ 2d8:	49 39 c6             	cmp    %rax,%r14
+ 2db:	0f 84 c1 fe ff ff    	je     1a2 <fm_sm_malloc+0x1a2>
+        CList *prev = what->prev, *next = what->next;
+ 2e1:	49 8b 56 08          	mov    0x8(%r14),%rdx
+                *what = (CList)C_LIST_INIT(*what);
+ 2e5:	66 0f 6f 24 24       	movdqa (%rsp),%xmm4
+        next->prev = prev;
+ 2ea:	48 89 50 08          	mov    %rdx,0x8(%rax)
+        prev->next = next;
+ 2ee:	48 89 02             	mov    %rax,(%rdx)
+                *what = (CList)C_LIST_INIT(*what);
+ 2f1:	41 0f 11 26          	movups %xmm4,(%r14)
+        }
+}
+ 2f5:	e9 a8 fe ff ff       	jmp    1a2 <fm_sm_malloc+0x1a2>
+    if (size <= slab_sizes[i]) {
+ 2fa:	48 8d 2d 00 00 00 00 	lea    0x0(%rip),%rbp        # 301 <fm_sm_malloc+0x301>
+  for (size_t i = 0; i < sizeof(slab_sizes) / sizeof(size_t); i++) {
+ 301:	41 bc 01 00 00 00    	mov    $0x1,%r12d
+ 307:	4c 8d 6d f0          	lea    -0x10(%rbp),%r13
+ 30b:	e9 ea fd ff ff       	jmp    fa <fm_sm_malloc+0xfa>
+    if (size <= slab_sizes[i]) {
+ 310:	48 8d 2d 00 00 00 00 	lea    0x0(%rip),%rbp        # 317 <fm_sm_malloc+0x317>
+  for (size_t i = 0; i < sizeof(slab_sizes) / sizeof(size_t); i++) {
+ 317:	41 bc 02 00 00 00    	mov    $0x2,%r12d
+ 31d:	4c 8d 6d e0          	lea    -0x20(%rbp),%r13
+ 321:	e9 d4 fd ff ff       	jmp    fa <fm_sm_malloc+0xfa>
+    if (size <= slab_sizes[i]) {
+ 326:	48 8d 2d 00 00 00 00 	lea    0x0(%rip),%rbp        # 32d <fm_sm_malloc+0x32d>
+  for (size_t i = 0; i < sizeof(slab_sizes) / sizeof(size_t); i++) {
+ 32d:	41 bc 03 00 00 00    	mov    $0x3,%r12d
+ 333:	4c 8d 6d d0          	lea    -0x30(%rbp),%r13
+ 337:	e9 be fd ff ff       	jmp    fa <fm_sm_malloc+0xfa>
+    if (size <= slab_sizes[i]) {
+ 33c:	48 8d 2d 00 00 00 00 	lea    0x0(%rip),%rbp        # 343 <fm_sm_malloc+0x343>
+  for (size_t i = 0; i < sizeof(slab_sizes) / sizeof(size_t); i++) {
+ 343:	41 bc 04 00 00 00    	mov    $0x4,%r12d
+ 349:	4c 8d 6d c0          	lea    -0x40(%rbp),%r13
+ 34d:	e9 a8 fd ff ff       	jmp    fa <fm_sm_malloc+0xfa>
+
+Disassembly of section .text.fm_sm_realloc:
+
+0000000000000000 <fm_sm_realloc>:
+void *fm_sm_realloc(void *ptr, size_t size) {
+   0:	f3 0f 1e fa          	endbr64 
+   4:	41 54                	push   %r12
+   6:	49 89 fc             	mov    %rdi,%r12
+   9:	55                   	push   %rbp
+   a:	48 89 fd             	mov    %rdi,%rbp
+   d:	48 81 e5 00 f0 ff ff 	and    $0xfffffffffffff000,%rbp
+  14:	53                   	push   %rbx
+  if (size <= meta->size) {
+  15:	48 39 75 20          	cmp    %rsi,0x20(%rbp)
+  19:	72 0d                	jb     28 <fm_sm_realloc+0x28>
+}
+  1b:	4c 89 e0             	mov    %r12,%rax
+  1e:	5b                   	pop    %rbx
+  1f:	5d                   	pop    %rbp
+  20:	41 5c                	pop    %r12
+  22:	c3                   	ret    
+  23:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+  28:	48 89 f7             	mov    %rsi,%rdi
+  void *p = fm_sm_malloc(size);
+  2b:	e8 00 00 00 00       	call   30 <fm_sm_realloc+0x30>
+  30:	48 89 c3             	mov    %rax,%rbx
+  if (p != NULL) {
+  33:	48 85 c0             	test   %rax,%rax
+  36:	74 28                	je     60 <fm_sm_realloc+0x60>
+
+__fortify_function void *
+__NTH (memcpy (void *__restrict __dest, const void *__restrict __src,
+	       size_t __len))
+{
+  return __builtin___memcpy_chk (__dest, __src, __len,
+  38:	48 8b 55 20          	mov    0x20(%rbp),%rdx
+  3c:	4c 89 e6             	mov    %r12,%rsi
+  3f:	48 89 c7             	mov    %rax,%rdi
+  42:	e8 00 00 00 00       	call   47 <fm_sm_realloc+0x47>
+    fm_sm_free(ptr);
+  47:	4c 89 e7             	mov    %r12,%rdi
+  4a:	49 89 dc             	mov    %rbx,%r12
+  4d:	e8 00 00 00 00       	call   52 <fm_sm_realloc+0x52>
+}
+  52:	4c 89 e0             	mov    %r12,%rax
+  55:	5b                   	pop    %rbx
+  56:	5d                   	pop    %rbp
+  57:	41 5c                	pop    %r12
+  59:	c3                   	ret    
+  5a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+  60:	45 31 e4             	xor    %r12d,%r12d
+  63:	5b                   	pop    %rbx
+  64:	5d                   	pop    %rbp
+  65:	4c 89 e0             	mov    %r12,%rax
+  68:	41 5c                	pop    %r12
+  6a:	c3                   	ret    

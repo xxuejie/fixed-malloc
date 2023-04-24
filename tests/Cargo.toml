@@ -1,0 +1,12 @@
+[package]
+name = "tests"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+proptest = "1.1.0"
+rand = "0.8.5"
+rusty-fork = "0.3.0"
+fixed-malloc = { path = "..", features = ["test-support"] }

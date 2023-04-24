@@ -1,0 +1,7 @@
+*.a
+*.o
+tests/target
+test.c
+test
+/target
+/Cargo.lock
