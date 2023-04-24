@@ -17,7 +17,7 @@ pub struct FixedAlloc {}
 impl FixedAlloc {
     // Initialize using static memory
     #[cfg(not(feature = "manual-init"))]
-    pub fn new_static() -> Self {
+    pub const fn new_static() -> Self {
         Self {}
     }
 
