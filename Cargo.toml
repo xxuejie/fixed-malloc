@@ -3,7 +3,7 @@ name = "fixed-malloc"
 version = "0.1.0"
 edition = "2021"
 description = "A memory allocator working within fixed memory region, used for embedded envoronments, such as Nervos CKB"
-exclude = ["tests"]
+exclude = ["tests", "concat_all.py", "fixed-malloc-all.h"]
 
 [features]
 default = []
