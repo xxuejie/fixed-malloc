@@ -82,20 +82,20 @@ There are 2 pointers used by linear malloc:
 
 It's worth noting that unlike some mallocs, linear malloc does not implement additional spaces before nor after allocated memory blocks. For example, a 12KB block is allocated as shown in the example graph, after rounding the requested size to 12KB (if needed), linear malloc would merely allocate 12KB memory blocks, no memory before or after the memory block is required. On the one hand, this is due to alignment reasons: adding padding memories might either result in a failure to align blocks that start on 4KB boundary, or risk wasting a lot of memory; on the other hand, one might question how linear malloc knows that this very allocated memory block is 12KB when freeing or reallocing.
 
-To solve this issue, linear malloc actually uses the first 4KB of the memory buffer for bookkeeping reasons. Amongst data used for different purposes, a 1024-element `uint8_t` buffer is used to keep track of allocated size for each allocated memory block. Assuming we are allocating the 12KB memory buffer:
+To solve this issue, linear malloc actually uses the first 4KB of the memory buffer for bookkeeping reasons. Amongst data used for different purposes, a 4096-element `uint8_t` buffer is used to keep track of allocated size for each allocated memory block. Assuming we are allocating the 12KB memory buffer:
 
 0. The memory buffer is initially divided into multiple **pages** of 4KB, as a result, each memory block allocated by linear malloc, will contain a integer number of **pages**. The initial 4KB memory used for bookkeeping reasons, can also be viewed as occupying the first **page**.
-1. Based on the starting address of the 12KB buffer, we can calculate the index of the first **page** belonging to this 12KB buffer to allocate. We will also deduce the number of pages for the memory buffer, in this case, 12KB buffer means 3 pages are allocated to this memory buffer. We will then store 3 into the 1024-element `uint8_t` buffer in the bookkeeping page, using the index of the first **page** as index into the 1024-element memory buffer.
+1. Based on the starting address of the 12KB buffer, we can calculate the index of the first **page** belonging to this 12KB buffer to allocate. We will also deduce the number of pages for the memory buffer, in this case, 12KB buffer means 3 pages are allocated to this memory buffer. We will then store 3 into the 4096-element `uint8_t` buffer in the bookkeeping page, using the index of the first **page** as index into the 4096-element memory buffer.
 
 There are actually 2 implications of step 1 here:
 
-* The `uint8_t` buffer used to keep memory size only has 1024 elements, meaning linear malloc can only deal with a pre-allocated buffer of 1024 memory pages, or 4MB here. This is more than enough for CKB, but one might want to expand this for more memories. Later version of linear malloc might support more bookkeeping sections for managing more memories.
+* The `uint8_t` buffer used to keep memory size only has 4096 elements, meaning linear malloc can only deal with a pre-allocated buffer of 4096 memory pages, or 16MB here. This is more than enough for CKB, but one might want to expand this for more memories. Later version of linear malloc might support more bookkeeping sections for managing more memories.
 * A `uint8_t` value is used to store the number of memory pages for an allocated block. This means an allocated block can contains 255 blocks at most, or close to 1MB memory. To overcome this, we actually introduce a small variable encoding scheme here: for memory blocks containing less than 255 blocks, the number of memory pages will be stored directly in the indexed `uint8_t` value, but for larger memory blocks, `0xFF` will be stored in the indexed `uint8_t` value, and the actual number of memory pages will be stored as a `uint32_t` value will be stored in the next 4-byte aligned address succeeding the index of the first memory page. For more details here, see `mark_alloced_pages` and `fetch_alloced_pages` functions in the linear malloc implementation.
 
 Now when freeing or reallocing the allocated memory block, we can reverse the steps:
 
 1. Use the passed in pointer address to calculate the index of the first memory page belonging to this memory block. Or see `ptr_to_page` function for details.
-2. Use the index of the first memory page to indexing into the 1024-element `uint8_t` value, if the fetched value is less than `0xFF`, it already contains the number of memory pages, from which we can calculate the size of the memory block.3. Otherwise continue to fetch number of memory pages from the next 4-byte aligned index.
+2. Use the index of the first memory page to indexing into the 4096-element `uint8_t` value, if the fetched value is less than `0xFF`, it already contains the number of memory pages, from which we can calculate the size of the memory block.3. Otherwise continue to fetch number of memory pages from the next 4-byte aligned index.
 
 This almost concludes the data structure of linear malloc. Now we can focus on the allocation algorithm of linear malloc. Or simply put: how does linear malloc picks which part in `__free_regions` to use when allocating a new memory block?
 
@@ -149,7 +149,7 @@ Slab malloc, as the name hinted, introduced [slabs](https://en.wikipedia.org/wik
 * 63 64-byte memory objects
 * 31 128-byte memory objects
 * 7 512-bytes memory objects
-* 3 1024-bytes memory objects
+* 3 1024-byte memory objects
 
 Notice the size of memory objects (named `size class`) to provide via slab malloc, are purely empirical, and might change in the future releases. Right now we are sticking with 32, 64, 128, 512 and 1024 as the size classes for memory objects of which we are providing slabs, since they are the most common ones used by CKB smart contracts.
 
